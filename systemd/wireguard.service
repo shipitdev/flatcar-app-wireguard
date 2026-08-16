@@ -1,0 +1,25 @@
+[Unit]
+Description=WireGuard VPN via Docker
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStartPre=-/usr/bin/docker rm -f wireguard
+ExecStart=/usr/bin/docker run -d \
+  --name wireguard \
+  --cap-add NET_ADMIN \
+  --cap-add SYS_MODULE \
+  -e PUID=1000 \
+  -e PGID=1000 \
+  -e TZ=UTC \
+  -p 51820:51820/udp \
+  -v /opt/wireguard/config:/config \
+  --sysctl net.ipv4.conf.all.src_valid_mark=1 \
+  --restart unless-stopped \
+  lscr.io/linuxserver/wireguard:latest
+ExecStop=/usr/bin/docker stop wireguard
+
+[Install]
+WantedBy=multi-user.target
