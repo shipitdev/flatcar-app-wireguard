@@ -11,6 +11,13 @@ storage:
   directories:
     - path: /opt/wireguard/config
       mode: 0755
+  files:
+    - path: /etc/systemd/resolved.conf.d/dns.conf
+      mode: 0644
+      contents:
+        inline: |
+          [Resolve]
+          DNS=8.8.8.8 1.1.1.1
 
 systemd:
   units:
@@ -19,7 +26,7 @@ systemd:
       contents: |
         [Unit]
         Description=WireGuard VPN via Docker
-        After=docker.service
+        After=docker.service systemd-resolved.service
         Requires=docker.service
 
         [Service]
