@@ -73,8 +73,15 @@ Boot Flatcar with your Ignition configuration and SSH public key:
 ```
 
 > **macOS Apple Silicon / QEMU 11.x Troubleshooting**:
-> If the wrapper script hangs during early boot at `UEFI firmware...`, pass Homebrew's native EDK2 firmware directly to QEMU via the `-bios` flag:
+> If the wrapper script hangs during early boot at `UEFI firmware...` due to an unimplemented flash write sequence in the bundled firmware, pass Homebrew's system `edk2-aarch64` firmware via `-bios`.
 >
+> **Using the wrapper script:**
+> ```bash
+> ./flatcar_production_qemu_uefi.sh -i wireguard.ign -a ~/.ssh/id_ed25519.pub -R "" -W "" -- -bios /opt/homebrew/share/qemu/edk2-aarch64-code.fd
+> ```
+> *(Passing empty strings to `-R` and `-W` disables the bundled `pflash` drives so QEMU boots cleanly via `-bios`.)*
+>
+> **Or running QEMU directly:**
 > ```bash
 > qemu-system-aarch64 \
 >   -machine virt,accel=hvf,gic-version=3 \
